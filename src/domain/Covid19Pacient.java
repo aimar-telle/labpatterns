@@ -9,9 +9,9 @@ import java.util.Observable;
 import java.util.Set;
 
 import factory.FactorySymptom;
-import iterator.Covid19PacientIterator;
+import iterator.Covid19PacientInvertedIterator;
 
-public class Covid19Pacient {
+public class Covid19Pacient extends Observable{
 	private String  name; 
 	private int age;
 	private FactorySymptom fs;
@@ -61,7 +61,11 @@ public class Covid19Pacient {
 		Symptom s=null;
 		s=createSymptom(symptom); 
 		if (s!=null) 
-			symptoms.put(s,w);		
+			symptoms.put(s,w);
+		
+		setChanged();
+		notifyObservers();
+		
 		return s;
 	}
 
@@ -69,10 +73,14 @@ public class Covid19Pacient {
 		Symptom s=getSymptomByName(symptomName);
 		System.out.println("Simptom to remove: "+s);
 		if (s!=null) symptoms.remove(s);
+		
+		setChanged();
+		notifyObservers();
+		
 		return s;
 	}
 	public Iterator iterator() {
-		return new Covid19PacientIterator(this.symptoms.keySet());
+		return new Covid19PacientInvertedIterator(this.symptoms.keySet());
 	}
 	
 	public double covidImpact() {

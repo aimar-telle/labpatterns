@@ -11,15 +11,22 @@ import java.util.Observer;
 
 import javax.swing.JLabel;
 
-public class PacientThermometerGUI extends Frame{	
+import domain.Covid19Pacient;
+
+public class PacientThermometerGUI extends Frame implements Observer{	
 	private TemperatureCanvas gauges;
 	/**
 	 * @wbp.nonvisual location=119,71
 	 */
 	private final JLabel label = new JLabel("New label");
-	
-	public PacientThermometerGUI(){ 
+	private Observable obs;
+
+	public PacientThermometerGUI(Observable obs){
 		super("Temperature Gauge");
+
+		this.obs=obs;
+		this.obs.addObserver(this);
+
 		Panel Top = new Panel();
 		add("North", Top);
 		gauges = new TemperatureCanvas(0,15);
@@ -30,40 +37,51 @@ public class PacientThermometerGUI extends Frame{
 		setVisible(true);
 	}
 
-	
+
 	class TemperatureCanvas extends Canvas {	
-		
+
 		public void set(int level) { current = level; }	
 		public int get(){return current;}
 		public int getMax(){return Max;}
 		public int getMin(){return Min;}
-		
+
 		private int Max, Min, current;
-		
+
 		public TemperatureCanvas(int min, int max){ Min = min; Max = max; }
-		
+
 		public void paint(Graphics g)
 		{	Color c;
-		    if (current<5) c=Color.green;
-		     else if (current<10) c=Color.yellow;
-		      else c=Color.red;
-			g.setColor(Color.black);
-			g.drawRect(left,top, width, height);
-			g.setColor(c);
-			g.fillOval(left-width/2, top+height-width/3,width*2, width*2);
-			g.setColor(Color.black);
-			g.drawOval(left-width/2, top+height-width/3,width*2, width*2);
-			g.setColor(Color.white);
-			g.fillRect(left+1,top+1, width-1, height-1);
-			g.setColor(c);
-			long redtop = height*(get()-getMax())/(getMin()-getMax());
-			g.fillRect(left+1, top + (int)redtop, width-1, height-(int)redtop);
+		if (current<5) c=Color.green;
+		else if (current<10) c=Color.yellow;
+		else c=Color.red;
+		g.setColor(Color.black);
+		g.drawRect(left,top, width, height);
+		g.setColor(c);
+		g.fillOval(left-width/2, top+height-width/3,width*2, width*2);
+		g.setColor(Color.black);
+		g.drawOval(left-width/2, top+height-width/3,width*2, width*2);
+		g.setColor(Color.white);
+		g.fillRect(left+1,top+1, width-1, height-1);
+		g.setColor(c);
+		long redtop = height*(get()-getMax())/(getMin()-getMax());
+		g.fillRect(left+1, top + (int)redtop, width-1, height-(int)redtop);
 		}
-		
+
 		private static final int width = 20;
 		private static final int top = 20;
 		private static final int left = 100;
 		private static final int right = 250;
 		private static final int height = 200;
+	}
+
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		Covid19Pacient	p=(Covid19Pacient)	arg0;
+		// Obtain the current covidImpact to paint
+		int farenheit =	(int)	p.covidImpact();	
+		// temperature	gauge update
+		gauges.set(farenheit);
+		gauges.repaint();		
 	}
 }

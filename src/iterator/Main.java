@@ -2,28 +2,33 @@ package iterator;
 
 import java.util.Iterator;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
+import adapter.*;
 import domain.Covid19Pacient;
-import domain.Symptom;
+import factory.FactorySymptom;
 
-	public class Main {
+public class Main {
 
-		public static void main(String[] args) {
-			Covid19Pacient p=new Covid19Pacient("Ane", 29);
-			p.addSymptom(new Symptom("s1", 10, 10), 1);
-			p.addSymptom(new Symptom("s2", 10, 10), 2);
-			p.addSymptom(new Symptom("s3", 10, 10), 3);
-			p.addSymptom(new Symptom("s4", 10, 10), 4);
-			p.addSymptom(new Symptom("s5", 10, 10), 5);
-			
-			Iterator i=p.iterator();
-			while(i.hasNext())
-				System.out.println(i.next());
 
+	public static void main(String[] args) {
+		Covid19Pacient p = new Covid19Pacient("Ane", 29, new FactorySymptom());
+		p.addSymptomByName("fiebre", 3);
+		p.addSymptomByName("tos seca", 2);
+		p.addSymptomByName("astenia", 3);
+		p.addSymptomByName("expectoracion", 1);
+		p.addSymptomByName("disnea", 2);
+
+		InvertedIterator adapter = new Covid19PacientInvertedIterator(p.getSymptoms());
+
+		System.out.println("symptomName: ");
+		Iterator i1 = Sorting.sortedIterator(adapter, new SymptomNameComparator());
+		while (i1.hasNext()) {
+			System.out.println(i1.next());
 		}
 
+		System.out.println("severityIndex: ");
+		Iterator i2 = Sorting.sortedIterator(adapter, new SeverityIndexComparator());
+		while (i2.hasNext()) {
+			System.out.println(i2.next());
+		}
 	}
-
+}

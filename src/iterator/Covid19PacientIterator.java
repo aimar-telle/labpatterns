@@ -28,5 +28,4 @@ public class Covid19PacientIterator implements Iterator{
 		position++;
 		return symptom;
 	}
-
 }
