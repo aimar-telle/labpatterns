@@ -80,7 +80,7 @@ public class Covid19Pacient extends Observable{
 		return s;
 	}
 	public Iterator iterator() {
-		return new Covid19PacientInvertedIterator(this.symptoms.keySet());
+		return (Iterator) new Covid19PacientInvertedIterator(this.symptoms.keySet());
 	}
 	
 	public double covidImpact() {
